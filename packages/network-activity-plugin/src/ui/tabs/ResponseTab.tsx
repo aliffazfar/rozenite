@@ -5,6 +5,8 @@ import { HttpNetworkEntry } from '../state/model';
 import { Section } from '../components/Section';
 import { KeyValueGrid } from '../components/KeyValueGrid';
 import { CodeBlock } from '../components/CodeBlock';
+import { useTheme } from '../theme/ThemeContext';
+import { cn } from '../utils/cn';
 
 export type ResponseTabProps = {
   selectedRequest: HttpNetworkEntry;
@@ -23,6 +25,8 @@ export const ResponseTab = ({
   selectedRequest,
   onRequestResponseBody,
 }: ResponseTabProps) => {
+  const { theme } = useTheme();
+  const { colors } = theme;
   const onRequestResponseBodyRef = useRef(onRequestResponseBody);
 
   useEffect(() => {
@@ -40,7 +44,7 @@ export const ResponseTab = ({
   const renderResponseBody = () => {
     if (!responseBody || responseBody.data === null) {
       return (
-        <div className="text-sm text-gray-400">
+        <div className={cn('text-sm', colors.textColor)}>
           No response body available for this request
         </div>
       );
@@ -54,7 +58,7 @@ export const ResponseTab = ({
           {
             key: 'Content-Type',
             value: type,
-            valueClassName: 'text-blue-400',
+            valueClassName: colors.textColor,
           },
         ]}
       />
@@ -106,7 +110,7 @@ export const ResponseTab = ({
     return renderResponseBodySection(
       <>
         {contentTypeGrid}
-        <div className="text-sm text-gray-400">
+        <div className={cn('text-sm', colors.textColor)}>
           Binary content not shown - {data.length} bytes
         </div>
       </>

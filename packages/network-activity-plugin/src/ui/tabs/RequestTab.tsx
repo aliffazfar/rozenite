@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { ScrollArea } from '../components/ScrollArea';
 import { JsonTree } from '../components/JsonTree';
 import { HttpNetworkEntry, SSENetworkEntry } from '../state/model';
@@ -6,12 +5,16 @@ import { KeyValueGrid } from '../components/KeyValueGrid';
 import { Section } from '../components/Section';
 import { CodeBlock } from '../components/CodeBlock';
 import { ReactNode, useMemo } from 'react';
+import { useTheme } from '../theme/ThemeContext';
+import { cn } from '../utils/cn';
 
 export type RequestTabProps = {
   selectedRequest: HttpNetworkEntry | SSENetworkEntry;
 };
 
 export const RequestTab = ({ selectedRequest }: RequestTabProps) => {
+  const { theme } = useTheme();
+  const { colors } = theme;
   const queryParams = useMemo(() => {
     const { searchParams } = new URL(selectedRequest.request.url);
 
@@ -71,7 +74,7 @@ export const RequestTab = ({ selectedRequest }: RequestTabProps) => {
               {
                 key: 'Content-Type',
                 value: type,
-                valueClassName: 'text-blue-400',
+                valueClassName: colors.textColor,
               },
             ]}
           />
@@ -87,7 +90,7 @@ export const RequestTab = ({ selectedRequest }: RequestTabProps) => {
         {renderQueryParams()}
         {renderRequestBody()}
         {!hasQueryParams && !requestBody && (
-          <div className="text-sm text-gray-400">
+          <div className={cn('text-sm', colors.textColor)}>
             No request body or query params for this request
           </div>
         )}

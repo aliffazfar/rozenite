@@ -1,6 +1,7 @@
 import { Input } from './Input';
 import { Button } from './Button';
 import { X, Filter, ChevronDown } from 'lucide-react';
+import { useTheme } from '../theme/ThemeContext';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -19,6 +20,9 @@ type FilterBarProps = {
 };
 
 export const FilterBar = ({ filter, onFilterChange }: FilterBarProps) => {
+  const { theme } = useTheme();
+  const { filterBar, dropdown } = theme.components;
+
   const handleTextChange = (text: string) => {
     onFilterChange({ ...filter, text });
   };
@@ -55,14 +59,14 @@ export const FilterBar = ({ filter, onFilterChange }: FilterBarProps) => {
   };
 
   return (
-    <div className="flex items-center gap-2 p-2 border-b border-gray-700 bg-gray-800">
+    <div className={`flex items-center gap-2 p-2 border-b ${filterBar.main}`}>
       {/* Text Filter */}
       <div className="flex-1">
         <Input
           placeholder="Filter requests..."
           value={filter.text}
           onChange={(e) => handleTextChange(e.target.value)}
-          className="h-8 text-sm bg-gray-700 border-gray-600 text-gray-100 placeholder:text-gray-400"
+          className={`h-8 text-sm ${filterBar.input}`}
         />
       </div>
 
@@ -74,8 +78,8 @@ export const FilterBar = ({ filter, onFilterChange }: FilterBarProps) => {
             size="sm"
             className={`h-8 px-3 text-xs transition-all ${
               isTypeFilterActive
-                ? 'bg-blue-600/20 border border-blue-500/50 text-blue-300 hover:bg-blue-600/30'
-                : 'text-gray-300 hover:text-gray-100 hover:bg-gray-700'
+                ? dropdown.activeTrigger
+                : dropdown.trigger
             }`}
           >
             <Filter className="h-3 w-3 mr-1" />
@@ -84,15 +88,18 @@ export const FilterBar = ({ filter, onFilterChange }: FilterBarProps) => {
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent sideOffset={5} className="space-y-1">
+        <DropdownMenuContent
+          sideOffset={5}
+          className={`space-y-1 ${dropdown.content}`}
+        >
           {(['http', 'sse', 'websocket'] as const).map((type) => (
             <DropdownMenuItem
               key={type}
               onClick={() => toggleType(type)}
               className={
                 filter.types.has(type)
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:bg-gray-700 hover:text-gray-100'
+                  ? dropdown.activeItem
+                  : dropdown.item
               }
             >
               {getTypeLabel(type)}

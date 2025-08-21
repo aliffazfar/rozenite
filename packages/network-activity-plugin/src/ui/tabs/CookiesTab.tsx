@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '../theme/ThemeContext';
 import { ScrollArea } from '../components/ScrollArea';
 import { Section } from '../components/Section';
 import { CookieCard } from '../components/CookieCard';
@@ -13,6 +14,8 @@ export type CookiesTabProps = {
 };
 
 export const CookiesTab = ({ selectedRequest }: CookiesTabProps) => {
+  const { theme } = useTheme();
+  const { colors } = theme;
   const requestHeaders = selectedRequest.request?.headers;
   const responseHeaders = selectedRequest.response?.headers;
 
@@ -30,7 +33,7 @@ export const CookiesTab = ({ selectedRequest }: CookiesTabProps) => {
     return (
       <ScrollArea className="h-full w-full">
         <div className="p-4">
-          <div className="text-sm text-gray-400">
+          <div className={`text-sm ${colors.textMuted}`}>
             No cookies for this request
           </div>
         </div>
@@ -51,7 +54,7 @@ export const CookiesTab = ({ selectedRequest }: CookiesTabProps) => {
                   <CookieCard
                     key={`request-${index}`}
                     cookie={cookie}
-                    keyClassName="text-blue-400"
+                    keyClassName={colors.textAccent1}
                   />
                 ))}
               </div>
@@ -67,7 +70,7 @@ export const CookiesTab = ({ selectedRequest }: CookiesTabProps) => {
                   <CookieCard
                     key={`response-${index}`}
                     cookie={cookie}
-                    keyClassName="text-green-400"
+                    keyClassName={colors.textAccent2}
                   />
                 ))}
               </div>

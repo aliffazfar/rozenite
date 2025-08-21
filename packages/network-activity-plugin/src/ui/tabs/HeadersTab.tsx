@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTheme } from '../theme/ThemeContext';
 import { ScrollArea } from '../components/ScrollArea';
 import { Section } from '../components/Section';
 import { KeyValueGrid, KeyValueItem } from '../components/KeyValueGrid';
@@ -28,6 +29,8 @@ function getHeadersItems(headers?: HttpHeaders): KeyValueItem[] {
 }
 
 export const HeadersTab = ({ selectedRequest }: HeadersTabProps) => {
+  const { theme } = useTheme();
+  const { colors } = theme;
   const requestBody = selectedRequest.request.body;
 
   const generalItems: KeyValueItem[] = useMemo(
@@ -35,7 +38,7 @@ export const HeadersTab = ({ selectedRequest }: HeadersTabProps) => {
       {
         key: 'Request URL',
         value: selectedRequest.request.url,
-        valueClassName: 'text-blue-400',
+        valueClassName: colors.textAccent1,
       },
       {
         key: 'Request Method',
@@ -51,7 +54,7 @@ export const HeadersTab = ({ selectedRequest }: HeadersTabProps) => {
             {
               key: 'Content-Type',
               value: requestBody.type,
-              valueClassName: 'text-blue-400',
+              valueClassName: colors.textAccent1,
             },
           ]
         : []),

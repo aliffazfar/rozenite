@@ -1,10 +1,14 @@
 import { Button } from './Button';
 import { Circle, Square, Trash2 } from 'lucide-react';
 import { useIsRecording, useNetworkActivityActions } from '../state/hooks';
+import { ThemeSelector } from './ThemeSelector';
+import { useTheme } from '../theme/ThemeContext';
 
 export const Toolbar = () => {
   const actions = useNetworkActivityActions();
   const isRecording = useIsRecording();
+  const { theme } = useTheme();
+  const { toolbar } = theme.components;
 
   const onToggleRecording = (): void => {
     actions.setRecording(!isRecording);
@@ -15,7 +19,9 @@ export const Toolbar = () => {
   };
 
   return (
-    <div className="flex items-center gap-2 p-2 border-b border-gray-700 bg-gray-800">
+    <div
+      className={`flex items-center gap-2 p-2 border-b ${toolbar.main}`}
+    >
       <Button
         variant="ghost"
         size="sm"
@@ -40,6 +46,9 @@ export const Toolbar = () => {
       >
         <Trash2 className="h-4 w-4" />
       </Button>
+      <div className="ml-auto">
+        <ThemeSelector />
+      </div>
     </div>
   );
 };

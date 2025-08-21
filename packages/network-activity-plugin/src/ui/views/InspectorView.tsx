@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Toolbar } from '../components/Toolbar';
+import { useTheme } from '../theme/ThemeContext';
 import { RequestList } from '../components/RequestList';
 import { SidePanel } from '../components/SidePanel';
 import { FilterBar, FilterState } from '../components/FilterBar';
@@ -18,6 +19,8 @@ export const InspectorView = ({ client }: InspectorViewProps) => {
   const actions = useNetworkActivityActions();
   const clientManagement = useNetworkActivityClientManagement();
   const hasSelectedRequest = useHasSelectedRequest();
+  const { theme } = useTheme();
+  const { inspectorView } = theme.components;
   const [filter, setFilter] = useState<FilterState>({
     text: '',
     types: new Set(['http', 'websocket', 'sse']),
@@ -38,7 +41,7 @@ export const InspectorView = ({ client }: InspectorViewProps) => {
   }, [client, clientManagement, actions]);
 
   return (
-    <div className="h-screen bg-gray-900 text-gray-100 flex flex-col">
+    <div className={`h-screen flex flex-col ${inspectorView.main}`}>
       <Toolbar />
       <FilterBar filter={filter} onFilterChange={setFilter} />
 

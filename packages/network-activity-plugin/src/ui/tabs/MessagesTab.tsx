@@ -10,6 +10,7 @@ import { JsonTree } from '../components/JsonTree';
 import { WebSocketMessageType } from '../../shared/websocket-events';
 import { WebSocketNetworkEntry } from '../state/model';
 import { useWebSocketMessages } from '../state/hooks';
+import { useTheme } from '../theme/ThemeContext';
 
 export type MessagesTabProps = {
   selectedRequest: WebSocketNetworkEntry;
@@ -26,6 +27,8 @@ interface WebSocketMessageRow {
 const columnHelper = createColumnHelper<WebSocketMessageRow>();
 
 export const MessagesTab = ({ selectedRequest }: MessagesTabProps) => {
+  const { theme } = useTheme();
+  const { colors, components } = theme;
   const websocketMessages = useWebSocketMessages(selectedRequest.id);
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
     null
@@ -59,14 +62,18 @@ export const MessagesTab = ({ selectedRequest }: MessagesTabProps) => {
       try {
         const jsonData = JSON.parse(data);
         return (
-          <div className="bg-gray-800 p-3 rounded border border-gray-700">
+          <div
+            className={`p-3 rounded border ${components.codeBlock.main}`}
+          >
             <JsonTree data={jsonData} />
           </div>
         );
       } catch {
         // Fallback to pre tag if JSON parsing fails
         return (
-          <pre className="text-sm font-mono text-gray-300 whitespace-pre-wrap bg-gray-800 p-3 rounded border border-gray-700 overflow-x-auto">
+          <pre
+            className={`text-sm font-mono whitespace-pre-wrap p-3 rounded border overflow-x-auto ${components.codeBlock.main}`}
+          >
             {data}
           </pre>
         );
@@ -77,7 +84,7 @@ export const MessagesTab = ({ selectedRequest }: MessagesTabProps) => {
   };
 
   const getMessageTypeColor = (type: 'sent' | 'received') => {
-    return type === 'sent' ? 'text-blue-400' : 'text-green-400';
+    return type === 'sent' ? colors.textAccent1 : colors.textAccent2;
   };
 
   const getMessageTypeIcon = (type: 'sent' | 'received') => {
@@ -101,51 +108,56 @@ export const MessagesTab = ({ selectedRequest }: MessagesTabProps) => {
     messageType: WebSocketMessageType
   ) => {
     if (messageType === 'binary') {
-      return <span className="text-gray-400">Binary message</span>;
+      return <span className={colors.textMuted}>Binary message</span>;
     }
 
     return (
-      <span className="max-w-xs truncate text-gray-400">
+      <span className={`max-w-xs truncate ${colors.textMuted}`}>
         {data.substring(0, 100) + (data.length > 100 ? '...' : '')}
       </span>
     );
   };
 
-  const columns = [
-    columnHelper.accessor('direction', {
-      header: 'Type',
-      cell: ({ getValue }) => {
-        const direction = getValue();
-        return (
-          <span
-            className={`flex items-center gap-1 ${getMessageTypeColor(
-              direction
-            )}`}
-          >
-            <span className="text-xs">{getMessageTypeIcon(direction)}</span>
-            <span className="capitalize">{direction}</span>
-          </span>
-        );
-      },
-      size: 80,
-    }),
-    columnHelper.accessor('data', {
-      header: 'Data',
-      cell: ({ getValue, row }) => {
-        const data = getValue();
-        const messageType = row.original.messageType;
-        return formatPreviewData(data, messageType);
-      },
-      size: 300,
-    }),
-    columnHelper.accessor('timestamp', {
-      header: 'Timestamp',
-      cell: ({ getValue }) => (
-        <div className="text-gray-400">{formatTimestamp(getValue())}</div>
-      ),
-      size: 120,
-    }),
-  ];
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('direction', {
+        header: 'Type',
+        cell: ({ getValue }) => {
+          const direction = getValue();
+          return (
+            <span
+              className={`flex items-center gap-1 ${getMessageTypeColor(
+                direction
+              )}`}
+            >
+              <span className="text-xs">{getMessageTypeIcon(direction)}</span>
+              <span className="capitalize">{direction}</span>
+            </span>
+          );
+        },
+        size: 80,
+      }),
+      columnHelper.accessor('data', {
+        header: 'Data',
+        cell: ({ getValue, row }) => {
+          const data = getValue();
+          const messageType = row.original.messageType;
+          return formatPreviewData(data, messageType);
+        },
+        size: 300,
+      }),
+      columnHelper.accessor('timestamp', {
+        header: 'Timestamp',
+        cell: ({ getValue }) => (
+          <div className={colors.textMuted}>
+            {formatTimestamp(getValue())}
+          </div>
+        ),
+        size: 120,
+      }),
+    ],
+    [colors]
+  );
 
   const table = useReactTable({
     data: tableData,
@@ -156,7 +168,7 @@ export const MessagesTab = ({ selectedRequest }: MessagesTabProps) => {
   if (websocketMessages.length === 0) {
     return (
       <ScrollArea className="h-full min-h-0 p-4">
-        <div className="text-sm text-gray-400">
+        <div className={`text-sm ${colors.textMuted}`}>
           No WebSocket messages available for this connection. Messages will
           appear here when the WebSocket connection sends or receives data.
         </div>
@@ -167,16 +179,20 @@ export const MessagesTab = ({ selectedRequest }: MessagesTabProps) => {
   return (
     <div className="h-full flex flex-col">
       {/* Messages Table */}
-      <div className="flex-1 border border-gray-700 rounded overflow-hidden">
+      <div
+        className={`flex-1 border rounded overflow-hidden ${colors.borderColor}`}
+      >
         <div className="overflow-y-auto h-full">
           <table className="w-full text-sm">
-            <thead className="bg-gray-800 border-b border-gray-700 sticky top-0 z-10">
+            <thead
+              className={`sticky top-0 z-10 border-b ${colors.secondaryBg} ${colors.borderColor}`}
+            >
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="text-left p-2 font-medium text-gray-300"
+                      className={`text-left p-2 font-medium ${colors.textColor}`}
                       style={{ width: header.getSize() }}
                     >
                       <div className="flex items-center gap-1">
@@ -196,8 +212,12 @@ export const MessagesTab = ({ selectedRequest }: MessagesTabProps) => {
               {table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className={`border-b border-gray-700 hover:bg-gray-800 cursor-pointer ${
-                    selectedMessageId === row.original.id ? 'bg-gray-800' : ''
+                  className={`border-b cursor-pointer ${colors.borderColor} ${
+                    colors.hoverBg
+                  } ${
+                    selectedMessageId === row.original.id
+                      ? colors.secondaryBg
+                      : ''
                   }`}
                   onClick={() => setSelectedMessageId(row.original.id)}
                 >
@@ -222,15 +242,15 @@ export const MessagesTab = ({ selectedRequest }: MessagesTabProps) => {
 
       {/* Message Details Panel */}
       {selectedMessage && (
-        <div className="border-t border-gray-700 bg-gray-800">
+        <div className={`border-t ${colors.borderColor} ${colors.secondaryBg}`}>
           <div className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-sm font-medium text-gray-300">
+              <h4 className={`text-sm font-medium ${colors.textColor}`}>
                 Message Details
               </h4>
               <button
                 onClick={() => setSelectedMessageId(null)}
-                className="text-gray-400 hover:text-blue-400 text-sm"
+                className={`text-sm ${colors.textMuted} hover:${colors.textAccent1}`}
               >
                 Close
               </button>
@@ -238,7 +258,7 @@ export const MessagesTab = ({ selectedRequest }: MessagesTabProps) => {
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-gray-400">Type: </span>
+                  <span className={colors.textMuted}>Type: </span>
                   <span
                     className={getMessageTypeColor(selectedMessage.direction)}
                   >
@@ -246,20 +266,22 @@ export const MessagesTab = ({ selectedRequest }: MessagesTabProps) => {
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-400">Message Type: </span>
-                  <span className="text-blue-400 capitalize">
+                  <span className={colors.textMuted}>Message Type: </span>
+                  <span className={`${colors.textAccent1} capitalize`}>
                     {selectedMessage.messageType}
                   </span>
                 </div>
                 <div>
-                  <span className="text-gray-400">Timestamp: </span>
-                  <span className="text-gray-300">
+                  <span className={colors.textMuted}>Timestamp: </span>
+                  <span className={colors.textColor}>
                     {formatTimestamp(selectedMessage.timestamp)}
                   </span>
                 </div>
               </div>
               <div>
-                <span className="text-gray-400 text-sm">Content:</span>
+                <span className={`${colors.textMuted} text-sm`}>
+                  Content:
+                </span>
                 <div className="mt-2 max-h-96 overflow-y-auto">
                   {formatData(
                     selectedMessage.data,

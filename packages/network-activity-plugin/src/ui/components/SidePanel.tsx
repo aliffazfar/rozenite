@@ -12,6 +12,7 @@ import {
   useNetworkActivityStore,
   useSelectedRequest,
 } from '../state/hooks';
+import { useTheme } from '../theme/ThemeContext';
 import { NetworkEntry as OldNetworkEntry } from '../types';
 import { getStatusColor } from '../utils/getStatusColor';
 import { MessagesTab } from '../tabs/MessagesTab';
@@ -85,6 +86,9 @@ export const SidePanel = () => {
   const actions = useNetworkActivityActions();
   const selectedRequest = useSelectedRequest();
   const client = useNetworkActivityStore((state) => state._client);
+  const { theme } = useTheme();
+  const { sidePanel } = theme.components;
+  const { colors } = theme;
 
   const onClose = (): void => {
     actions.setSelectedRequest(null);
@@ -134,31 +138,31 @@ export const SidePanel = () => {
         <>
           <TabsTrigger
             value="headers"
-            className="data-[state=active]:bg-gray-700"
+            className={`${sidePanel.tabTriggerActive} ${sidePanel.tabTriggerHover}`}
           >
             Headers
           </TabsTrigger>
           <TabsTrigger
             value="request"
-            className="data-[state=active]:bg-gray-700"
+            className={`${sidePanel.tabTriggerActive} ${sidePanel.tabTriggerHover}`}
           >
             Request
           </TabsTrigger>
           <TabsTrigger
             value="response"
-            className="data-[state=active]:bg-gray-700"
+            className={`${sidePanel.tabTriggerActive} ${sidePanel.tabTriggerHover}`}
           >
             Response
           </TabsTrigger>
           <TabsTrigger
             value="cookies"
-            className="data-[state=active]:bg-gray-700"
+            className={`${sidePanel.tabTriggerActive} ${sidePanel.tabTriggerHover}`}
           >
             Cookies
           </TabsTrigger>
           <TabsTrigger
             value="timing"
-            className="data-[state=active]:bg-gray-700"
+            className={`${sidePanel.tabTriggerActive} ${sidePanel.tabTriggerHover}`}
           >
             Timing
           </TabsTrigger>
@@ -171,19 +175,19 @@ export const SidePanel = () => {
         <>
           <TabsTrigger
             value="headers"
-            className="data-[state=active]:bg-gray-700"
+            className={`${sidePanel.tabTriggerActive} ${sidePanel.tabTriggerHover}`}
           >
             Headers
           </TabsTrigger>
           <TabsTrigger
             value="request"
-            className="data-[state=active]:bg-gray-700"
+            className={`${sidePanel.tabTriggerActive} ${sidePanel.tabTriggerHover}`}
           >
             Request
           </TabsTrigger>
           <TabsTrigger
             value="messages"
-            className="data-[state=active]:bg-gray-700"
+            className={`${sidePanel.tabTriggerActive} ${sidePanel.tabTriggerHover}`}
           >
             Messages
           </TabsTrigger>
@@ -195,7 +199,7 @@ export const SidePanel = () => {
       <>
         <TabsTrigger
           value="messages"
-          className="data-[state=active]:bg-gray-700"
+          className={`${sidePanel.tabTriggerActive} ${sidePanel.tabTriggerHover}`}
         >
           Messages
         </TabsTrigger>
@@ -275,21 +279,21 @@ export const SidePanel = () => {
   };
 
   return (
-    <div className="w-1/2 flex flex-col bg-gray-900">
+    <div className={`w-1/2 flex flex-col ${sidePanel.main}`}>
       {/* Side Panel Header */}
-      <div className="flex items-center justify-between p-3 border-b border-gray-700 bg-gray-800">
+      <div className={`flex items-center justify-between p-3 ${sidePanel.header}`}>
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <div
             className={`w-3 h-3 rounded-full flex-shrink-0 ${getTypeColor(
               selectedRequest.type
             )}`}
           ></div>
-          <span className="font-medium truncate">{requestName}</span>
+          <span className={`font-medium truncate ${sidePanel.headerText}`}>{requestName}</span>
           <Badge
             variant="outline"
             className={`${getStatusColor(
               requestStatus
-            )} border-current flex-shrink-0`}
+            )} border-current flex-shrink-0 ${sidePanel.headerText}`}
           >
             {requestStatus}
           </Badge>
@@ -298,7 +302,7 @@ export const SidePanel = () => {
           variant="ghost"
           size="sm"
           onClick={onClose}
-          className="h-6 w-6 p-0 text-gray-400 hover:text-blue-400 flex-shrink-0 ml-2"
+          className={`h-6 w-6 p-0 ${sidePanel.headerText} hover:text-blue-400 flex-shrink-0 ml-2`}
         >
           <X className="h-4 w-4" />
         </Button>
@@ -313,7 +317,7 @@ export const SidePanel = () => {
           }
           className="h-full flex flex-col"
         >
-          <TabsList className="grid w-full grid-cols-5 bg-gray-800 rounded-none border-b border-gray-700">
+          <TabsList className={`grid w-full grid-cols-5 ${sidePanel.tabsList} rounded-none border-b ${colors.borderColor}`}>
             {getTabsListTriggers()}
           </TabsList>
 

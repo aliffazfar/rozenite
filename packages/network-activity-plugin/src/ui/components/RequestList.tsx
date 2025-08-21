@@ -18,6 +18,7 @@ import {
 import { getStatusColor } from '../utils/getStatusColor';
 import { FilterState } from './FilterBar';
 import { isNumber } from '../../utils/isNumber';
+import { useTheme } from '../theme/ThemeContext';
 
 type NetworkRequest = {
   id: RequestId;
@@ -209,6 +210,8 @@ export const RequestList = ({ filter }: RequestListProps) => {
   const actions = useNetworkActivityActions();
   const processedRequests = useProcessedRequests();
   const selectedRequestId = useSelectedRequestId();
+  const { theme } = useTheme();
+  const { requestList } = theme.components;
   const [sorting, setSorting] = useState<SortingState>([]);
 
   // Filter requests based on current filter state
@@ -259,15 +262,15 @@ export const RequestList = ({ filter }: RequestListProps) => {
   return (
     <div className="flex-1 overflow-auto">
       <table className="w-full">
-        <thead className="bg-gray-800 border-b border-gray-700 sticky top-0 z-10">
+        <thead className={`${requestList.header} sticky top-0 z-10`}>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className={`text-left text-xs font-medium text-gray-400 px-2 py-2 ${
+                  className={`text-left text-xs font-medium ${requestList.headerText} px-2 py-2 ${
                     header.column.getCanSort()
-                      ? 'cursor-pointer select-none hover:bg-gray-700'
+                      ? requestList.headerSortable
                       : ''
                   }`}
                   style={{ width: header.getSize() }}
@@ -281,7 +284,7 @@ export const RequestList = ({ filter }: RequestListProps) => {
                           header.getContext()
                         )}
                     {header.column.getCanSort() && (
-                      <span className="text-gray-500">
+                      <span className={`${requestList.sortIcon}`}>
                         {{
                           asc: '↑',
                           desc: '↓',
@@ -298,15 +301,17 @@ export const RequestList = ({ filter }: RequestListProps) => {
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className={`text-sm hover:bg-gray-800 cursor-pointer border-b border-gray-800 ${
-                selectedRequestId === row.original.id ? 'bg-blue-900/30' : ''
+              className={`text-sm ${requestList.row} cursor-pointer ${
+                selectedRequestId === row.original.id
+                  ? requestList.selectedRow
+                  : ''
               }`}
               onClick={() => onRequestSelect(row.original.id)}
             >
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className="px-2 py-1"
+                  className={`px-2 py-1 ${requestList.cell}`}
                   style={{ width: cell.column.getSize() }}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
